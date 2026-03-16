@@ -29,6 +29,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r app/requirements.txt
 
+      - name: Run Black
+        run: python -m black app 
+
       - name: Run flake8
         run: python -m flake8 app
 
@@ -37,6 +40,11 @@ jobs:
 
       - name: Run Bandit SAST scan
         run: python -m bandit -r app --exclude app/tests
+
+      - name: Run Gitleaks (secrets scan)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run dependency vulnerability scan
         run: python -m pip_audit -r app/requirements.txt
