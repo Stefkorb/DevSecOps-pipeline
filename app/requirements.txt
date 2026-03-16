@@ -1,7 +1,7 @@
-fastapi[standard]
-pytest
-black
-flake8
-bandit
-pip-audit
-httpx
+fastapi[standard]==0.135.1
+pytest==9.0.2
+black==26.3.1
+flake8==7.3.0
+bandit==1.9.4
+pip-audit==2.10.0
+httpx==0.28.1
