@@ -1,0 +1,12 @@
+services:
+  app:
+    image: devsecops-demo-api:local
+    container_name: devsecops-demo-api-staging
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: staging
+      APP_PORT: 8000
+      AUTH_TOKEN: changeme
+      FEATURE_FLAG_DEMO: true
+    restart: unless-stopped
