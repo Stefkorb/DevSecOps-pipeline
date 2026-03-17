@@ -1,0 +1,34 @@
+name: Container Security Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  container-security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -f docker/Dockerfile -t devsecops-demo-api:ci .
+
+      - name: Export Docker image to tar archive
+        run: docker save -o devsecops-demo-api-ci.tar devsecops-demo-api:ci
+
+      - name: Run Trivy scan (report HIGH and CRITICAL)
+        run: |
+          docker run --rm -v "$PWD:/work" aquasec/trivy:latest image \
+          --input /work/devsecops-demo-api-ci.tar \
+          --severity HIGH,CRITICAL
+
+      - name: Run Trivy policy gate (fail on CRITICAL)
+        run: |
+          docker run --rm -v "$PWD:/work" aquasec/trivy:latest image \
+          --input /work/devsecops-demo-api-ci.tar \
+          --severity CRITICAL \
+          --exit-code 1
