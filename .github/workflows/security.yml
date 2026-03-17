@@ -9,6 +9,7 @@ on:
 
 jobs:
   container-security:
+    name: container-security
     runs-on: ubuntu-latest
     permissions:
       contents: read
