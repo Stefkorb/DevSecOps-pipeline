@@ -1,0 +1,33 @@
+name: Release Artifact Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version (example: v0.1.0)"
+        required: true
+        default: "v0.1.0"
+
+jobs:
+  release-artifact:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build release Docker image
+        run: |
+          docker build -f docker/Dockerfile \
+          -t devsecops-demo-api:${{ github.event.inputs.release_version }} .
+
+      - name: Export release Docker image
+        run: |
+          docker save -o devsecops-demo-api-${{ github.event.inputs.release_version }}.tar \
+          devsecops-demo-api:${{ github.event.inputs.release_version }}
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-demo-api-${{ github.event.inputs.release_version }}
+          path: devsecops-demo-api-${{ github.event.inputs.release_version }}.tar
