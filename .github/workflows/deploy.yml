@@ -1,0 +1,45 @@
+name: Staging Deployment Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version to deploy (example: v0.1.0)"
+        required: true
+        default: "v0.1.0"
+
+jobs:
+  staging-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Normalize image name
+        id: image
+        run: |
+          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository_owner }}/devsecops-pipeline" | tr '[:upper:]' '[:lower:]')
+          echo "image_name=$IMAGE_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create staging environment file
+        run: |
+          cat <<EOF > deploy/staging/.env.staging.generated
+          IMAGE_NAME=${{ steps.image.outputs.image_name }}
+          IMAGE_TAG=${{ github.event.inputs.release_version }}
+          APP_ENV=staging
+          APP_PORT=8001
+          FEATURE_FLAG_DEMO=false
+          API_TOKEN=staging-demo-token
+          EOF
+
+      - name: Show deployment configuration
+        run: |
+          cat deploy/staging/.env.staging.generated
+
+      - name: Validate compose file
+        run: |
+          docker compose \
+            --env-file deploy/staging/.env.staging.generated \
+            -f deploy/docker-compose.yml \
+            config
