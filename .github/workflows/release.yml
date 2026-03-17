@@ -1,33 +1,37 @@
-name: Release Artifact Pipeline
+name: Release Promotion Pipeline
 
 on:
   workflow_dispatch:
     inputs:
+      source_sha_tag:
+        description: "Tested source image tag (example: sha-0c9914c)"
+        required: true
       release_version:
         description: "Release version (example: v0.1.0)"
         required: true
         default: "v0.1.0"
 
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/devsecops-pipeline
+
 jobs:
-  release-artifact:
+  promote-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Build release Docker image
+      - name: Create release tag from tested image
         run: |
-          docker build -f docker/Dockerfile \
-          -t devsecops-demo-api:${{ github.event.inputs.release_version }} .
+          docker buildx imagetools create \
+          --tag $IMAGE_NAME:${{ github.event.inputs.release_version }} \
+          $IMAGE_NAME:${{ github.event.inputs.source_sha_tag }}
 
-      - name: Export release Docker image
+      - name: Inspect promoted release image
         run: |
-          docker save -o devsecops-demo-api-${{ github.event.inputs.release_version }}.tar \
-          devsecops-demo-api:${{ github.event.inputs.release_version }}
-
-      - name: Upload release artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: devsecops-demo-api-${{ github.event.inputs.release_version }}
-          path: devsecops-demo-api-${{ github.event.inputs.release_version }}.tar
+          docker buildx imagetools inspect \
+          $IMAGE_NAME:${{ github.event.inputs.release_version }}

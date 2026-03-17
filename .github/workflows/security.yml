@@ -6,29 +6,45 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/devsecops-pipeline
+
 jobs:
   container-security:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -f docker/Dockerfile -t devsecops-demo-api:ci .
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Export Docker image to tar archive
-        run: docker save -o devsecops-demo-api-ci.tar devsecops-demo-api:ci
+      - name: Set image tag
+        id: vars
+        run: echo "sha_tag=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Build tested Docker image
+        run: |
+          docker build -f docker/Dockerfile \
+          -t $IMAGE_NAME:${{ steps.vars.outputs.sha_tag }} .
 
       - name: Run Trivy scan (report HIGH and CRITICAL)
         run: |
+          docker save -o tested-image.tar $IMAGE_NAME:${{ steps.vars.outputs.sha_tag }}
           docker run --rm -v "$PWD:/work" aquasec/trivy:latest image \
-          --input /work/devsecops-demo-api-ci.tar \
+          --input /work/tested-image.tar \
           --severity HIGH,CRITICAL
 
       - name: Run Trivy policy gate (fail on CRITICAL)
         run: |
           docker run --rm -v "$PWD:/work" aquasec/trivy:latest image \
-          --input /work/devsecops-demo-api-ci.tar \
+          --input /work/tested-image.tar \
           --severity CRITICAL \
           --exit-code 1
+
+      - name: Push tested image to GHCR
+        run: docker push $IMAGE_NAME:${{ steps.vars.outputs.sha_tag }}
