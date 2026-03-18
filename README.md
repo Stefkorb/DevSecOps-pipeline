@@ -5,7 +5,7 @@
 This project demonstrates the design and implementation of a secure, multi-stage CI/CD pipeline across the full Software Development Lifecycle (SDLC).
 
 The pipeline introduces structured delivery stages (code → build → release → deploy) and integrates security controls at each step.  
-It is designed to reflect how a small SaaS team can transition from ad-hoc development to a controlled and security-aware delivery process.
+It is designed to reflect how a small SaaS team can transition from ad-hoc development to controlled and scalable security-aware Software Delivery process
 
 ---
 
@@ -58,9 +58,9 @@ The pipeline follows a **build-once, promote-artifact** strategy:
 
 1. Code is pushed to a feature branch  
 2. Pull Request is opened against `main`  
-3. CI pipeline runs quality and security checks  
-4. Merge is blocked if checks fail  
-5. Approved code is merged into `main`  
+3. CI pipeline runs quality,security checks and container security checks
+4. Merge is blocked if checks fail
+5. Approved code and tested image is pushed into `main`
 6. Docker image is built and pushed to GHCR (tagged with commit SHA)  
 7. Release workflow promotes the image to a versioned tag  
 8. Staging deployment validates the release configuration  
@@ -87,7 +87,7 @@ Security is enforced through:
 - failing CI jobs on violations  
 - pull request validation  
 - protected `main` branch  
-- required status checks before merge  
+- required status checks before merge(disabled because this is a solo project)
 
 ---
 
@@ -146,6 +146,9 @@ devsecops-pipeline/
 │       └── deploy.yml
 └── README.md
 
+
+```
+
 ## Local Development
 
 Run locally:
@@ -164,36 +167,6 @@ Run container:
 
 docker run --rm -p 8000:8000 devsecops-demo-api:local
 
-## Pipeline Stages
-
-1. Code Quality & Security
-
--formatting validation
--linting
--unit testing
--static analysis (SAST)
--dependency vulnerability scanning
--secrets detection
-
-2. Container Security
-
--Docker image build
--Dockerfile linting and best-practice enforcement
--image vulnerability scanning
--container policy enforcement
--publication to GHCR using an immutable SHA tag
-
-3. Release Promotion
-
--promotion of a tested image
--version tagging without rebuilding 
-
-4. Staging Deployment
-
--environment-based configuration
--deployment validation using Docker Compose
-
-
 ## Security Enforcement Demo
 
 A controlled test was performed by introducing a fake secret into a pull request.
@@ -204,7 +177,21 @@ Expected behavior:
 -the pull request is blocked from merging into main
 -This confirms that the pipeline actively enforces security policies and prevents unsafe code from reaching the main branch.
 
-Example Outputs
+### Example Outputs
+
+#### Gitleaks Detection (Secret Leak Identified)
+
+![Gitleaks Detection](docs/images/gitleakdetection.png)
+
+> The pipeline detects a hardcoded secret using Gitleaks and fails the job.
+
+---
+
+#### Pull Request Blocked (Policy Enforcement)
+
+![PR Blocked](docs/images/mergeblocked.png)
+
+> The pull request is blocked due to failing required checks, enforcing secure merge policies.
 
 ## Future Improvements
 
@@ -212,4 +199,3 @@ Example Outputs
 -Infrastructure as Code (Terraform)
 -monitoring and alerting
 -runtime security controls
-
