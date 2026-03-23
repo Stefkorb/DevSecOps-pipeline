@@ -112,6 +112,43 @@ The pipeline follows a **build-once, promote-artifact** strategy:
 - Promoted to versioned releases without rebuild(manually)
 - Deployed by version(manually)
 
+### Image Build and Registry Strategy
+
+The pipeline follows a controlled image publishing approach to ensure that only trusted code produces deployable artifacts.
+
+#### Pull Requests
+
+- Docker images are built and scanned (Trivy, Hadolint)
+- Security policies are enforced
+- **Images are NOT pushed to the registry**
+
+This ensures that untrusted or unreviewed code does not produce publishable artifacts.
+
+#### Main Branch
+
+- The image is rebuilt from the merged (trusted) code
+- Security scans are executed again
+- The image is pushed to GHCR using an immutable SHA-based tag
+
+This guarantees that only validated and approved code results in a published artifact.
+
+#### Rationale
+
+This approach enforces a clear separation between:
+
+- **Validation phase (PR)** → build and verify  
+- **Release phase (main)** → build and publish  
+
+It prevents unsafe images from entering the registry and aligns with secure software supply chain practices.
+
+### Automatic Branch Cleanup
+
+Feature branches are automatically deleted after being merged into the `main` branch.
+
+This keeps the repository clean and ensures that only active development branches remain visible.
+
+Developers are expected to create a new branch for each change, following a short-lived branch strategy.
+
 This ensures:
 
 - traceability

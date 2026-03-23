@@ -46,13 +46,13 @@ jobs:
       # ✅ Scan happens ALWAYS
       - name: Run Trivy scan (report HIGH and CRITICAL)
         run: |
-          docker run --rm -v "$PWD:/work" aquasec/trivy:latest image \
+          docker run --rm -v "$PWD:/work" aquasec/trivy:0.69.3 image \
             --input /work/tested-image.tar \
             --severity HIGH,CRITICAL
 
       - name: Run Trivy policy gate (fail on CRITICAL)
         run: |
-          docker run --rm -v "$PWD:/work" aquasec/trivy:latest image \
+          docker run --rm -v "$PWD:/work" aquasec/trivy:0.69.3 image \
             --input /work/tested-image.tar \
             --severity CRITICAL \
             --exit-code 1

@@ -1,4 +1,4 @@
-# Enterprise DevSecOps Pipeline for a Containerized FastAPI Application
+# DevSecOps Pipeline for a Containerized FastAPI Application
 
 ## Overview
 
@@ -6,8 +6,6 @@ This project demonstrates the design and implementation of a secure, multi-stage
 
 The pipeline introduces structured delivery stages (code → build → release → deploy) and integrates security controls at each step.  
 It is designed to reflect how a small SaaS team can transition from ad-hoc development to controlled and scalable security-aware Software Delivery process
-
----
 
 ## Business Context
 
@@ -26,17 +24,13 @@ This introduces risks such as:
 
 This project addresses those gaps by implementing a secure and structured DevSecOps pipeline.
 
----
+## What This Project Demonstrates
 
-## Objectives
-
-- Integrate security controls directly into the CI/CD pipeline
-- Enforce security policies (not just detect issues)
-- Establish a clean and scalable delivery workflow
-- Apply secure-by-design and secure-by-default principles
-- Demonstrate production-minded pipeline design
-
----
+- Secure CI/CD pipeline design across the SDLC
+- Integration of security controls into development workflows
+- Enforcement of security policies through automated gates
+- Container security validation before artifact publication
+- Controlled release and deployment process
 
 ## Architecture Summary
 
@@ -60,10 +54,11 @@ The pipeline follows a **build-once, promote-artifact** strategy:
 2. Pull Request is opened against `main`  
 3. CI pipeline runs quality,security checks and container security checks
 4. Merge is blocked if checks fail
-5. Approved code and tested image is pushed into `main`
-6. Docker image is built and pushed to GHCR (tagged with commit SHA)  
-7. Release workflow promotes the image to a versioned tag  
-8. Staging deployment validates the release configuration  
+5. Approved code and tested image is merged into `main`
+6. Feature branches are automatically deleted after being merged into the `main` branch.
+7. Docker image is built and pushed to GHCR (tagged with commit SHA)  
+8. Release workflow promotes the image to a versioned tag  
+9. Staging deployment validates the release configuration  
 
 ---
 
@@ -87,7 +82,7 @@ Security is enforced through:
 - failing CI jobs on violations  
 - pull request validation  
 - protected `main` branch  
-- required status checks before merge(disabled because this is a solo project)
+- Required status checks can be enforced in team environments to prevent merging unvalidated code.
 
 ---
 
@@ -119,8 +114,6 @@ Security is enforced through:
 
 - environment-based configuration  
 - deployment validation using Docker Compose  
-
----
 
 ## Repository Structure
 
@@ -166,6 +159,46 @@ docker build -f docker/Dockerfile -t devsecops-demo-api:local .
 Run container:
 
 docker run --rm -p 8000:8000 devsecops-demo-api:local
+
+## GitHub development workflow
+
+Developers follow a feature-branch workflow aligned with the CI/CD pipeline
+
+### Development flow
+
+1. Sync with main branch
+
+git checkout main
+git pull origin main
+
+1. Create a new feature branch
+
+git checkout -b feature/(short-description)
+
+1. Implement changes and commit
+
+git add .
+git commit -m "Describe change"
+
+1. Push branch and open Pull request
+
+git push -u origin featurebranch
+
+1. A pull request is created against the main branch and must be manually reviewed and approved before merging.
+
+1. CI/CD pipeline runs automatically on the Pull Request
+
+- quality checks
+- security scans
+- container validation
+
+1. After approval and successful checks, the branch is merged into main
+
+- image is rebuilt
+- security validation is re-executed
+- artifact is published to GHCR
+
+1. Feature branch is automatically deleted after merge
 
 ## Security Enforcement Demo
 
