@@ -178,3 +178,7 @@ It emphasizes:
 - policy enforcement instead of passive scanning
 - controlled artifact promotion
 - production-oriented delivery workflow
+
+## Diagram UNDERCONSTRUCTION
+
+- THIS IS THE ARCHITECTURE/SYSTEM DIAGRAM
