@@ -143,3 +143,5 @@ It emphasizes:
 - production-oriented delivery workflow
 
 ## Diagram UNDERCONSTRUCTION
+
+- THIS IS THE ARCHITECTURE/SYSTEM DIAGRAM
