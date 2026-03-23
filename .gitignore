@@ -21,3 +21,6 @@ htmlcov/
 
 # logs
 *.log
+
+#TAR
+*.tar
