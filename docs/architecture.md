@@ -13,6 +13,10 @@ The system is designed to demonstrate a secure, structured, and production-minde
 - Container Registry(GHCR)
 - Deployment Layer(Docker compose - staging simulation)
 
+## System Architecture Diagram
+
+![System Architecture Diagram](images/SystemDiagram.png)
+
 ## 3. Application Architecture
 
 A very small FastAPI service just to demostrate the pipeline:
@@ -89,19 +93,9 @@ Security is integrated across all stages of the pipeline.
 
 ### Security Controls Mapping
 
-| Stage                | Control                    | Tool        |
+![Security Controls Mapping](images/SM.png)
 
--------------------------------------------------------------------
-| Push/PR              | Branch Protection & Enforcement| Branch rule |
-| Code Quality         | Formatting & Linting       | Black, Flake8|
-| Testing              | Unit Tests                 | Pytest      |
-| SAST                 | Static Code Analysis       | Bandit      |
-| Dependencies         | Vulnerability Scanning     | pip-audit   |
-| Secrets              | Secret Detection           | Gitleaks    |
-| Container Build      | Dockerfile Best Practices  | Hadolint    |
-| Container Runtime    | Image Vulnerability Scan   | Trivy       |
-| Release              | Release the already tested image + versioning|
-| Deploy               | Controlled and organised deployment|
+The diagram below maps each security control to the corresponding stage of the delivery process. It shows how validation, policy enforcement, and controlled promotion are integrated across the CI/CD pipeline.
 
 ## 6. Artifact Flow
 
@@ -194,7 +188,3 @@ It emphasizes:
 - policy enforcement instead of passive scanning
 - controlled artifact promotion
 - production-oriented delivery workflow
-
-## Diagram UNDERCONSTRUCTION
-
-- THIS IS THE ARCHITECTURE/SYSTEM DIAGRAM
