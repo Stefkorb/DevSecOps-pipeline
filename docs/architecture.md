@@ -93,7 +93,7 @@ Security is integrated across all stages of the pipeline.
 
 ### Security Controls Mapping
 
-![Security Controls Mapping](images/SM.png)
+![Security Controls Mapping](images/SM1.png)
 
 The diagram below maps each security control to the corresponding stage of the delivery process. It shows how validation, policy enforcement, and controlled promotion are integrated across the CI/CD pipeline.
 
