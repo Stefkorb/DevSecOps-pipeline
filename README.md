@@ -60,7 +60,13 @@ The pipeline follows a **build-once, promote-artifact** strategy:
 8. Release workflow promotes the image to a versioned tag  
 9. Staging deployment validates the release configuration  
 
----
+### Release Tag Policy
+
+Release versions are treated as immutable references.
+
+During release promotion, a version tag is created from an already tested SHA-tagged image stored in GHCR. If the requested release tag already exists, the workflow fails and prevents reassignment.
+
+This ensures that published release versions remain stable, traceable, and auditable.
 
 ## Security Controls
 
@@ -83,6 +89,7 @@ Security is enforced through:
 - pull request validation  
 - protected `main` branch  
 - Required status checks can be enforced in team environments to prevent merging unvalidated code.
+- controlled artifact publication (images are pushed only from the main branch)
 
 ---
 

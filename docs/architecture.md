@@ -158,6 +158,22 @@ This ensures:
 - better control
 - better security
 
+## Release Tag Immutability
+
+The release workflow enforces an immutable tag policy for versioned images.
+
+Each release version is promoted from a previously validated SHA-tagged image stored in GHCR. Before creating a release tag, the workflow checks whether the requested version already exists.
+
+If the target release tag is already present, the workflow fails and prevents reassignment.
+
+This design provides:
+
+- traceability between a release version and a tested artifact
+- protection against accidental or unauthorized tag overwrite
+- stable and auditable release references
+
+The SHA-based image tag remains the technical source of truth, while version tags provide human-readable release references for deployment and release management.
+
 ## 7. Deployment Architecture
 
 Deployment is implemented as a staging simulation using Docker Compose.
