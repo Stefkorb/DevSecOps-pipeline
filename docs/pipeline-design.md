@@ -10,7 +10,7 @@ The pipeline is designed to separate validation, trusted artifact creation, rele
 
 ## Pipeline Flow Diagram
 
-![Pipeline Flow Diagram](docs/images/PipelineFlowDiagram.png)
+![Pipeline Flow Diagram](images/PipelineFlowDiagram.png)
 
 The diagram below illustrates the end-to-end delivery flow of the project, from feature branch development and pull request validation to trusted artifact publication, release promotion, and staged deployment.
 
